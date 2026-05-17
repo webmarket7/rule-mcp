@@ -7,6 +7,7 @@ import { registerTool as registerBrandStyleToEmailThemeTool } from './brand-styl
 import { registerTool as registerModifyEmailThemeTool } from './modify-email-theme/index.js';
 import { registerTool as registerGenerateEmailRcmlDocTool } from './generate-email-rcml-doc/index.js';
 import { registerTool as registerCreateEmailTemplateTool } from './create-email-template/index.js';
+import { registerTool as registerRenderEmailTemplateTool } from './render-email-template/index.js';
 
 
 export function registerTools(server: McpServer, ruleClient: RuleClient): void {
@@ -16,4 +17,5 @@ export function registerTools(server: McpServer, ruleClient: RuleClient): void {
   registerModifyEmailThemeTool(server, ruleClient);
   registerGenerateEmailRcmlDocTool(server, ruleClient);
   registerCreateEmailTemplateTool(server, ruleClient);
+  registerRenderEmailTemplateTool(server, ruleClient);
 }
