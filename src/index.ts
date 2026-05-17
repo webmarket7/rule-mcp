@@ -6,6 +6,7 @@ import { createConfig } from './config.js';
 import { createRuleClient } from './rule-client.js';
 import { registerTools } from './tools/index.js';
 import { registerResources } from './resources/index.js';
+import { registerPrompts } from './prompts/index.js';
 
 
 export const createServer = (): McpServer => {
@@ -16,6 +17,7 @@ export const createServer = (): McpServer => {
     capabilities: {
       tools: { listChanged: true },
       resources: { listChanged: true },
+      prompts: { listChanged: true },
     }
   });
 }
@@ -28,6 +30,7 @@ async function main() {
 
   registerTools(server, ruleClient);
   registerResources(server);
+  registerPrompts(server);
 
   await server.connect(transport);
 }
