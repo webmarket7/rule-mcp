@@ -12,7 +12,7 @@ export function registerTool(server: McpServer, _ruleClient: RuleClient): Regist
       'full RCML element reference, ProseMirror content format, attribute values, and ' +
       'layout patterns. Generate an RcmlDocument JSON, then pass it here with the ' +
       'EmailTheme JSON. On success, returns the themed and validated RCML. On failure, ' +
-      'returns structured validation errors — fix the RCML and call again to iterate. ' +
+      'returns structured validation errors alongside the themed RCML — fix the RCML and call again to iterate. ' +
       'Once valid, call create-email-template to publish the template.',
     inputSchema: inputSchemaShape,
   }, async (args) => {
@@ -57,7 +57,7 @@ export function registerTool(server: McpServer, _ruleClient: RuleClient): Regist
       return {
         content: [{
           type: 'text',
-          text: JSON.stringify({ valid: false, errors: result.errors }, null, 2),
+          text: JSON.stringify({ valid: false, errors: result.errors, rcml: themedDoc }, null, 2),
         }],
       };
     }

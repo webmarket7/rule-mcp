@@ -43,12 +43,7 @@ The optional \`id\` field on any node can be omitted — the editor assigns IDs.
 
 \`\`\`
 rcml
-├── rc-head
-│   ├── rc-brand-style   (optional — references a saved brand style)
-│   ├── rc-attributes    (optional — theme injects default overrides here)
-│   ├── rc-preview       (optional — preheader text)
-│   ├── rc-class         (optional — named style group)
-│   └── rc-plain-text    (optional — plain-text fallback)
+├── rc-head              (metadata — children: rc-preview, rc-plain-text, rc-brand-style, rc-class, rc-attributes)
 └── rc-body
     ├── rc-section       (row — contains 1–20 rc-column children)
     ├── rc-wrapper       (shared background around sections)
@@ -92,15 +87,9 @@ Container for document metadata. Always include even if empty (\`"children": []\
 
 ### rc-preview
 Preheader text shown next to the subject line in inbox lists.
-\`\`\`json
-{ "tagName": "rc-preview", "content": "See inside for 20% off" }
-\`\`\`
 
 ### rc-plain-text
 Plain-text fallback body for mail clients that don't render HTML.
-\`\`\`json
-{ "tagName": "rc-plain-text", "content": { "type": "text", "text": "Hi, see example.com for details." } }
-\`\`\`
 
 ### rc-body
 The email content root. Attributes applied by \`applyTheme\` — omit \`attributes\` unless
@@ -250,7 +239,7 @@ A single social-network icon link. Place inside \`rc-social\`.
 Key attributes:
 | Attribute    | Notes                                              |
 |--------------|----------------------------------------------------|
-| \`name\`       | Network identifier: \`facebook\`, \`instagram\`, \`linkedin\`, \`tiktok\`, \`x\`, \`website\` |
+| \`name\`       | Network identifier: \`email\`, \`facebook\`, \`groupme\`, \`instagram\`, \`itunes\`, \`kik\`, \`linkedin\`, \`messenger\`, \`periscope\`, \`pinterest\`, \`reddit\`, \`skype\`, \`snapchat\`, \`tiktok\`, \`web\`, \`whatsapp\`, \`x\`, \`youtube\` |
 | \`href\`       | Link URL (only if user provided)                   |
 | \`icon-color\` | \`brand\`/\`black\`/\`white\` (default \`brand\`)           |
 | \`icon-shape\` | \`original\`/\`circle\`/\`square\` (default \`original\`)   |
@@ -538,15 +527,9 @@ Placeholder \`type\` values: \`CustomField\`, \`Subscriber\`, \`User\`, \`Remote
 }
 \`\`\`
 
-### Preheader in head
+### rc-head
 \`\`\`json
-{
-  "tagName": "rc-head",
-  "children": [
-    { "tagName": "rc-preview", "content": "See inside for 20% off" },
-    { "tagName": "rc-plain-text", "content": { "type": "text", "text": "Hi — see example.com for our sale." } }
-  ]
-}
+{ "tagName": "rc-head", "children": [] }
 \`\`\`
 
 ---
@@ -563,9 +546,11 @@ Placeholder \`type\` values: \`CustomField\`, \`Subscriber\`, \`User\`, \`Remote
 8. Multi-column layouts use \`width\` percentages that sum to 100% (e.g. 50%/50%, 33%/33%/34%).
 9. Use \`rc-logo\` (without \`src\`) for the brand logo so the theme can supply it.
 10. Use \`rc-spacer\` between sections for vertical breathing room.
-11. Use \`rc-preview\` in \`rc-head\` to give the email a preheader text.
-12. After generating, pass the JSON to \`generate-email-rcml-doc\` with the theme. Fix any
-    validation errors returned and call again until the document is valid.
+11. \`rc-head\` children are optional. Add \`rc-preview\` with a text \`content\` for preheader text when requested.
+12. After generating, pass the JSON to \`generate-email-rcml-doc\` with \`{}\` as the theme value.
+    Do NOT pass the output of \`generate-email-theme\` or \`brand-style-to-email-theme\` — the
+    nested EmailTheme format causes mass validation failures. Fix any validation errors returned
+    and call again until the document is valid.
 `;
 
 export function registerEmailRcmlGenerationGuideResource(server: McpServer): void {
