@@ -285,9 +285,9 @@ Renders the first matching conditional branch.
 | Type           | Notes                                        |
 |----------------|----------------------------------------------|
 | \`paragraph\`    | Standard paragraph block                     |
-| \`bullet_list\`  | Unordered list; children are \`list_item\`     |
-| \`ordered_list\` | Ordered list; children are \`list_item\`       |
-| \`list_item\`    | List entry; child is a \`paragraph\`           |
+| \`bullet-list\`  | Unordered list; children are \`list-item\`. Requires \`attrs: { spread: false }\`. Only valid in \`rc-text\` / \`rc-heading\` (not \`rc-button\`). |
+| \`ordered-list\` | Ordered list; children are \`list-item\`. Requires \`attrs: { order: 1, spread: false }\`. Only valid in \`rc-text\` / \`rc-heading\`. |
+| \`list-item\`    | List entry. Requires \`attrs: { label: "", "list-type": "bullet", spread: "false" }\`. Child is a \`paragraph\`. |
 
 ### Inline node types
 | Type           | Notes                                                         |
@@ -324,6 +324,35 @@ Renders the first matching conditional branch.
 }
 \`\`\`
 
+### Example: unordered list
+\`\`\`json
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "bullet-list",
+      "attrs": { "spread": false },
+      "content": [
+        {
+          "type": "list-item",
+          "attrs": { "label": "", "list-type": "bullet", "spread": "false" },
+          "content": [
+            { "type": "paragraph", "content": [{ "type": "text", "text": "First item" }] }
+          ]
+        },
+        {
+          "type": "list-item",
+          "attrs": { "label": "", "list-type": "bullet", "spread": "false" },
+          "content": [
+            { "type": "paragraph", "content": [{ "type": "text", "text": "Second item" }] }
+          ]
+        }
+      ]
+    }
+  ]
+}
+\`\`\`
+
 ### Placeholder (merge field)
 \`\`\`json
 {
@@ -345,7 +374,8 @@ Placeholder \`type\` values: \`CustomField\`, \`Subscriber\`, \`User\`, \`Remote
 - Every \`text\` node must have a non-empty \`"text"\` field.
 - Do not include empty \`"marks": []\` — omit the field instead.
 - A \`doc\` with no content blocks is invalid; include at least one \`paragraph\`.
-- Lists need \`list_item\` children; each \`list_item\` needs a \`paragraph\` child.
+- Lists (\`rc-text\`/\`rc-heading\` only — not \`rc-button\`) use kebab-case types with required \`attrs\`.
+  Each \`list-item\` must contain a \`paragraph\`.
 
 ---
 
