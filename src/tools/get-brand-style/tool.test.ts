@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, afterEach } from 'vitest';
 import { registerTool } from './tool.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { RuleClient, RuleBrandStyle } from '@rulecom/sdk';
+import type { RuleClient, BrandStyle } from '@rulecom/sdk';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -9,33 +9,33 @@ afterEach(() => {
 
 type Handler = (args: Record<string, unknown>) => Promise<{ content: { type: string; text: string }[]; isError?: boolean }>;
 
-const mockBrandStyle: RuleBrandStyle = {
+const mockBrandStyle: BrandStyle = {
   id: 42,
-  account_id: 1,
+  accountId: 1,
   name: 'Acme Brand',
   description: 'Main brand style',
   domain: 'acme.com',
-  is_default: true,
-  colours: [{ id: 1, brand_style_id: 42, type: 'brand', hex: '#FF5733', brightness: 50, created_at: '2024-01-01', updated_at: '2024-01-01' }],
+  isDefault: true,
+  colours: [{ id: 1, brandStyleId: 42, type: 'brand', hex: '#FF5733', brightness: 50, createdAt: '2024-01-01', updatedAt: '2024-01-01' }],
   fonts: [],
   links: [],
   images: [],
-  created_at: '2024-01-01',
-  updated_at: '2024-01-01',
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01',
 };
 
-const mockStyleB: RuleBrandStyle = { ...mockBrandStyle, id: 99, name: 'Secondary Brand', is_default: false };
+const mockStyleB: BrandStyle = { ...mockBrandStyle, id: 99, name: 'Secondary Brand', isDefault: false };
 
 function makeClient(overrides?: Partial<RuleClient['brandStyles']>): RuleClient {
   return {
     brandStyles: {
-      list: vi.fn().mockResolvedValue({ data: [
-        { id: 42, name: 'Acme Brand', is_default: true, created_at: '2024-01-01', updated_at: '2024-01-01' },
-        { id: 99, name: 'Secondary Brand', is_default: false, created_at: '2024-01-01', updated_at: '2024-01-01' },
-      ]}),
+      list: vi.fn().mockResolvedValue([
+        { id: 42, name: 'Acme Brand', isDefault: true, createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+        { id: 99, name: 'Secondary Brand', isDefault: false, createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+      ]),
       get: vi.fn().mockImplementation(async (id: number) => {
-        if (id === 42) return { data: mockBrandStyle };
-        if (id === 99) return { data: mockStyleB };
+        if (id === 42) return mockBrandStyle;
+        if (id === 99) return mockStyleB;
         return null;
       }),
       ...overrides,
@@ -107,16 +107,16 @@ describe('get-brand-style handler', () => {
     expect(result.isError).toBeFalsy();
     const parsed = JSON.parse(result.content[0].text);
     expect(parsed.id).toBe(42);
-    expect(parsed.is_default).toBe(true);
+    expect(parsed.isDefault).toBe(true);
   });
 
   it('falls back to first item when none is marked default', async () => {
     const client = makeClient({
-      list: vi.fn().mockResolvedValue({ data: [
-        { id: 10, name: 'First', is_default: false, created_at: '', updated_at: '' },
-        { id: 20, name: 'Second', is_default: false, created_at: '', updated_at: '' },
-      ]}),
-      get: vi.fn().mockResolvedValue({ data: { ...mockBrandStyle, id: 10, name: 'First', is_default: false } }),
+      list: vi.fn().mockResolvedValue([
+        { id: 10, name: 'First', isDefault: false, createdAt: '', updatedAt: '' },
+        { id: 20, name: 'Second', isDefault: false, createdAt: '', updatedAt: '' },
+      ]),
+      get: vi.fn().mockResolvedValue({ ...mockBrandStyle, id: 10, name: 'First', isDefault: false }),
     });
     const call = captureHandler(client);
     const result = await call({});
@@ -127,7 +127,7 @@ describe('get-brand-style handler', () => {
 
   it('returns isError when account has no brand styles', async () => {
     const client = makeClient({
-      list: vi.fn().mockResolvedValue({ data: [] }),
+      list: vi.fn().mockResolvedValue([]),
     });
     const call = captureHandler(client);
     const result = await call({});

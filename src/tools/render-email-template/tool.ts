@@ -13,7 +13,7 @@ export function registerTool(server: McpServer, ruleClient: RuleClient): Registe
   }, async (args) => {
     try {
       const params = args.subscriberId !== undefined
-        ? { subscriber_id: args.subscriberId }
+        ? { subscriberId: args.subscriberId }
         : undefined;
       const html = await ruleClient.templates.render(args.id, params);
       if (html === null) {

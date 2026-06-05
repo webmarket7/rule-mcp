@@ -49,7 +49,7 @@ describe('render-email-template handler', () => {
     const client = makeClient();
     const call = captureHandler(client);
     await call({ id: 42, subscriberId: 99 });
-    expect(client.templates.render).toHaveBeenCalledWith(42, { subscriber_id: 99 });
+    expect(client.templates.render).toHaveBeenCalledWith(42, { subscriberId: 99 });
   });
 
   it('passes undefined params when subscriberId is omitted', async () => {

@@ -50,7 +50,7 @@ const validRcml: RcmlDocument = {
 function makeClient(overrides?: Partial<RuleClient['templates']>): RuleClient {
   return {
     templates: {
-      create: vi.fn().mockResolvedValue({ success: true, data: { id: 42, name: 'Test', content: validRcml } }),
+      createEmailTemplate: vi.fn().mockResolvedValue({ id: 42, name: 'Test', content: validRcml, messageType: 'email', createdAt: '2024-01-01', updatedAt: '2024-01-01' }),
       get: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
@@ -84,9 +84,9 @@ describe('create-email-template handler', () => {
     });
     expect(result.isError).toBeFalsy();
     const response = JSON.parse(result.content[0].text);
-    expect(response.data.id).toBe(42);
-    expect(client.templates.create).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'Summer Sale', message_type: 'email' })
+    expect(response.id).toBe(42);
+    expect(client.templates.createEmailTemplate).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Summer Sale', content: expect.objectContaining({}) })
     );
   });
 
@@ -115,7 +115,7 @@ describe('create-email-template handler', () => {
 
   it('returns isError when ruleClient.templates.create throws', async () => {
     const client = makeClient({
-      create: vi.fn().mockRejectedValue(new Error('API error')),
+      createEmailTemplate: vi.fn().mockRejectedValue(new Error('API error')),
     });
     const call = captureHandler(client);
     const result = await call({
@@ -134,8 +134,8 @@ describe('create-email-template handler', () => {
       rcml: JSON.stringify(validRcml),
       name: 'Test',
     });
-    expect(client.templates.create).toHaveBeenCalledWith(
-      expect.objectContaining({ message_type: 'email' })
+    expect(client.templates.createEmailTemplate).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Test', content: expect.objectContaining({}) })
     );
   });
 });
