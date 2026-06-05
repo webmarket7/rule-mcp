@@ -15,17 +15,16 @@ export function registerTool(server: McpServer, ruleClient: RuleClient): Registe
     try {
       if (args.id !== undefined) {
         const response = await ruleClient.brandStyles.get(args.id);
-        if (!response?.data) {
+        if (!response) {
           return {
             content: [{ type: 'text', text: `Brand style with ID ${args.id} not found.` }],
             isError: true,
           };
         }
-        return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+        return { content: [{ type: 'text', text: JSON.stringify(response, null, 2) }] };
       }
 
-      const listResponse = await ruleClient.brandStyles.list();
-      const items = listResponse.data ?? [];
+      const items = await ruleClient.brandStyles.list();
 
       if (items.length === 0) {
         return {
@@ -46,18 +45,18 @@ export function registerTool(server: McpServer, ruleClient: RuleClient): Registe
         }
         targetId = found.id;
       } else {
-        const defaultItem = items.find((s) => s.is_default) ?? items[0];
+        const defaultItem = items.find((s) => s.isDefault) ?? items[0];
         targetId = defaultItem.id;
       }
 
       const response = await ruleClient.brandStyles.get(targetId);
-      if (!response?.data) {
+      if (!response) {
         return {
           content: [{ type: 'text', text: `Could not retrieve brand style with ID ${targetId}.` }],
           isError: true,
         };
       }
-      return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+      return { content: [{ type: 'text', text: JSON.stringify(response, null, 2) }] };
     } catch (err) {
       return {
         content: [{ type: 'text', text: `Failed to fetch brand style: ${err instanceof Error ? err.message : String(err)}` }],

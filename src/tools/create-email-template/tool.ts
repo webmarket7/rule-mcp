@@ -1,7 +1,6 @@
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { safeValidateEmailTemplate } from '@rulecom/sdk';
 import type { RuleClient, RcmlDocument } from '@rulecom/sdk';
-import type { RuleTemplateCreateRequest } from '@rulecom/sdk';
 import { inputSchemaShape } from './schemas.js';
 
 export function registerTool(server: McpServer, ruleClient: RuleClient): RegisteredTool {
@@ -41,11 +40,10 @@ export function registerTool(server: McpServer, ruleClient: RuleClient): Registe
     try {
       const req = {
         name: args.name,
-        message_type: 'email',
-        template: rcmlDoc,
-      } as RuleTemplateCreateRequest;
+        content: rcmlDoc,
+      };
 
-      const response = await ruleClient.templates.create(req);
+      const response = await ruleClient.templates.createEmailTemplate(req);
       return {
         content: [{ type: 'text', text: JSON.stringify(response, null, 2) }],
       };

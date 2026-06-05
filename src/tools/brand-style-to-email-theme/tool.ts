@@ -1,6 +1,6 @@
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { emailThemeFromBrandStyle } from '@rulecom/sdk';
-import type { RuleClient, RuleBrandStyle } from '@rulecom/sdk';
+import type { RuleClient, BrandStyle } from '@rulecom/sdk';
 import { inputSchemaShape } from './schemas.js';
 
 export function registerTool(server: McpServer, _ruleClient: RuleClient): RegisteredTool {
@@ -12,9 +12,9 @@ export function registerTool(server: McpServer, _ruleClient: RuleClient): Regist
       'Before calling this tool, call get-brand-style to fetch the brand style JSON.',
     inputSchema: inputSchemaShape,
   }, async (args) => {
-    let brandStyle: RuleBrandStyle;
+    let brandStyle: BrandStyle;
     try {
-      brandStyle = JSON.parse(args.brandStyle) as RuleBrandStyle;
+      brandStyle = JSON.parse(args.brandStyle) as BrandStyle;
     } catch {
       return {
         content: [{ type: 'text', text: 'Invalid brand style JSON: could not parse input.' }],
