@@ -2,7 +2,7 @@ import { vi, describe, it, expect, afterEach } from 'vitest';
 import { registerTool } from './tool.js';
 import { emailThemeFromBrandStyle } from '@rulecom/sdk';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { RuleClient, RuleBrandStyle } from '@rulecom/sdk';
+import type { RuleClient, BrandStyle } from '@rulecom/sdk';
 
 vi.mock('@rulecom/sdk', async (importActual) => {
   const actual = await importActual<typeof import('@rulecom/sdk')>();
@@ -15,17 +15,17 @@ afterEach(() => {
 
 type Handler = (args: Record<string, unknown>) => Promise<{ content: { type: string; text: string }[]; isError?: boolean }>;
 
-const mockBrandStyle: RuleBrandStyle = {
+const mockBrandStyle: BrandStyle = {
   id: 42,
-  account_id: 1,
+  accountId: 1,
   name: 'Acme Brand',
-  is_default: true,
-  colours: [{ id: 1, brand_style_id: 42, type: 'brand', hex: '#FF5733', brightness: 50, created_at: '2024-01-01', updated_at: '2024-01-01' }],
+  isDefault: true,
+  colours: [{ id: 1, brandStyleId: 42, type: 'brand', hex: '#FF5733', brightness: 50, createdAt: '2024-01-01', updatedAt: '2024-01-01' }],
   fonts: [],
   links: [],
   images: [],
-  created_at: '2024-01-01',
-  updated_at: '2024-01-01',
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01',
 };
 
 function captureHandler(): Handler {
