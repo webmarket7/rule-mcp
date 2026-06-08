@@ -24,26 +24,28 @@ The server reads one environment variable:
 |----------|-------------|
 | `RULECOM_API_KEY` | Your Rule API key |
 
-## Connecting to Claude Code
+## Connecting to Claude Code (project-scoped)
 
-Pass the API key with `-e` when registering the server. Replace the path with the absolute path to this repo on your machine.
+This repo includes a `.mcp.json` file that registers the server automatically whenever Claude Code is opened in this directory — no global installation needed.
+
+Set your API key in the environment before starting Claude Code:
+
+```bash
+export RULECOM_API_KEY=<your-key>
+```
+
+Then open Claude Code in this directory. The server loads automatically. Verify with `/mcp` inside the session.
+
+To persist the key across terminal sessions, add the `export` line to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.).
+
+## Connecting to Claude Code (global)
+
+If you want the server available in all Claude Code sessions regardless of directory, register it globally:
 
 ```bash
 claude mcp add rule-mcp \
   -e RULECOM_API_KEY=<your-key> \
   node /absolute/path/to/rule-mcp/dist/index.js
-```
-
-Verify the server is registered:
-
-```bash
-claude mcp list
-```
-
-Reload the server inside an active Claude Code session:
-
-```
-/mcp
 ```
 
 ## Connecting to Claude Desktop
