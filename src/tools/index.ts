@@ -8,6 +8,9 @@ import { registerTool as registerModifyEmailThemeTool } from './modify-email-the
 import { registerTool as registerGenerateEmailRcmlDocTool } from './generate-email-rcml-doc/index.js';
 import { registerTool as registerCreateEmailTemplateTool } from './create-email-template/index.js';
 import { registerTool as registerRenderEmailTemplateTool } from './render-email-template/index.js';
+import { registerTool as registerCreateCampaignTool } from './create-campaign/index.js';
+import { registerTool as registerCreateEmailMessageTool } from './create-email-message/index.js';
+import { registerTool as registerCreateDynamicSetTool } from './create-dynamic-set/index.js';
 
 
 export function registerTools(server: McpServer, ruleClient: RuleClient): void {
@@ -18,4 +21,7 @@ export function registerTools(server: McpServer, ruleClient: RuleClient): void {
   registerGenerateEmailRcmlDocTool(server, ruleClient);
   registerCreateEmailTemplateTool(server, ruleClient);
   registerRenderEmailTemplateTool(server, ruleClient);
+  registerCreateCampaignTool(server, ruleClient);
+  registerCreateEmailMessageTool(server, ruleClient);
+  registerCreateDynamicSetTool(server, ruleClient);
 }
