@@ -573,7 +573,7 @@ Placeholder \`type\` values: \`CustomField\`, \`Subscriber\`, \`User\`, \`Remote
 5. Every \`rc-text\`, \`rc-heading\`, and \`rc-button\` must have a \`content\` field with a valid ProseMirror doc.
 6. A ProseMirror \`text\` node must have a non-empty \`"text"\` field.
 7. \`rc-section\` must contain at least one \`rc-column\`.
-8. Multi-column layouts use \`width\` percentages that sum to 100% (e.g. 50%/50%, 33%/33%/34%).
+8. In any section with more than one \`rc-column\`, every column MUST have a \`width\` as a percentage, and all widths must sum to 100% (e.g. 50%/50%, 33%/33%/34%). Never use pixel widths in multi-column sections — the editor only accepts percentages when multiple columns are present.
 9. Use \`rc-logo\` (without \`src\`) for the brand logo so the theme can supply it.
 10. Use \`rc-spacer\` between sections for vertical breathing room.
 11. \`rc-head\` children are optional. Add \`rc-preview\` with a text \`content\` for preheader text when requested.

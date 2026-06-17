@@ -1,6 +1,9 @@
 import { McpServer, RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { applyTheme, safeValidateEmailTemplate, EmailThemeApplyError } from '@rulecom/sdk';
 import type { RuleClient, RcmlDocument, EmailTheme } from '@rulecom/sdk';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyNode = any;
 import { inputSchemaShape } from './schemas.js';
 
 export function registerTool(server: McpServer, _ruleClient: RuleClient): RegisteredTool {
@@ -10,7 +13,10 @@ export function registerTool(server: McpServer, _ruleClient: RuleClient): Regist
       'Applies an EmailTheme to an RcmlDocument and validates the result. ' +
       'Before calling this tool, read the email-rcml://generation-guide resource for the ' +
       'full RCML element reference, ProseMirror content format, attribute values, and ' +
-      'layout patterns. Generate an RcmlDocument JSON, then pass it here with the ' +
+      'layout patterns. For a complete machine-readable reference of all supported tags and ' +
+      'attributes consult email-rcml://rcml-spec; for ProseMirror node/mark schemas consult ' +
+      'email-rcml://rfm-spec; for personalization token syntax and parameters consult ' +
+      'email-rcml://placeholder-spec. Generate an RcmlDocument JSON, then pass it here with the ' +
       'EmailTheme JSON. On success, returns the themed and validated RCML. On failure, ' +
       'returns structured validation errors alongside the themed RCML — fix the RCML and call again to iterate. ' +
       'Once valid, call create-email-template to publish the template.',
@@ -38,7 +44,7 @@ export function registerTool(server: McpServer, _ruleClient: RuleClient): Regist
 
     let themedDoc: RcmlDocument;
     try {
-      themedDoc = applyTheme(rcmlDoc, theme);
+      themedDoc = normalizeColumnWidths(applyTheme(rcmlDoc, theme));
     } catch (err) {
       if (err instanceof EmailThemeApplyError) {
         return {
@@ -66,4 +72,37 @@ export function registerTool(server: McpServer, _ruleClient: RuleClient): Regist
       content: [{ type: 'text', text: JSON.stringify(result.data, null, 2) }],
     };
   });
+}
+
+function normalizeColumnWidths(doc: RcmlDocument): RcmlDocument {
+  const [head, body] = doc.children;
+  return { ...doc, children: [head, normalizeBodyColumnWidths(body)] };
+}
+
+function normalizeBodyColumnWidths(node: AnyNode): AnyNode {
+  if (node.tagName === 'rc-section') {
+    const columns = (node.children ?? []).filter((c: AnyNode) => c.tagName === 'rc-column');
+    if (columns.length > 1) {
+      const allHavePercentage = columns.every(
+        (c: AnyNode) => typeof c.attributes?.width === 'string' && (c.attributes.width as string).endsWith('%')
+      );
+      if (!allHavePercentage) {
+        const share = Math.floor(100 / columns.length);
+        const remainder = 100 - share * columns.length;
+        let colsSeen = 0;
+        const newChildren = (node.children ?? []).map((child: AnyNode) => {
+          if (child.tagName !== 'rc-column') return child;
+          const isLast = colsSeen === columns.length - 1;
+          const pct = isLast ? share + remainder : share;
+          colsSeen++;
+          return { ...child, attributes: { ...(child.attributes ?? {}), width: `${pct}%` } };
+        });
+        return { ...node, children: newChildren };
+      }
+    }
+  }
+  if (node.children) {
+    return { ...node, children: node.children.map(normalizeBodyColumnWidths) };
+  }
+  return node;
 }
