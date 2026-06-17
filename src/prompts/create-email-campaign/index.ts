@@ -42,7 +42,9 @@ export function registerPrompt(server: McpServer): RegisteredPrompt {
       requestContext;
 
     const brandStyleStep = args.brandStyleId
-      ? `Call \`get-brand-style\` with \`id\` set to \`${args.brandStyleId}\`.`
+      ? /^\d+$/.test(args.brandStyleId)
+        ? `Call \`get-brand-style\` with \`id\` set to \`${Number(args.brandStyleId)}\`.`
+        : `Call \`get-brand-style\` with \`name\` set to \`"${args.brandStyleId}"\`.`
       : 'Call `get-brand-style` with no arguments to fetch the default brand style.';
 
     const linksInstruction = args.links

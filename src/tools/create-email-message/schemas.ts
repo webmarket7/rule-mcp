@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const inputSchemaShape = {
-  campaignId: z.number().describe(
+  campaignId: z.number().int().positive().describe(
     'ID of the campaign to attach this message to. Use the ID returned by create-campaign.'
   ),
   subject: z.string().describe(
