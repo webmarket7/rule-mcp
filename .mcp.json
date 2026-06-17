@@ -3,10 +3,7 @@
     "rule-mcp": {
       "type": "stdio",
       "command": "node",
-      "args": ["./dist/index.js"],
-      "env": {
-        "RULECOM_API_KEY": "${RULECOM_API_KEY}"
-      }
+      "args": ["./dist/index.js"]
     }
   }
 }

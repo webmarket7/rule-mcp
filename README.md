@@ -28,15 +28,14 @@ The server reads one environment variable:
 
 This repo includes a `.mcp.json` file that registers the server automatically whenever Claude Code is opened in this directory — no global installation needed.
 
-Set your API key in the environment before starting Claude Code:
+Copy the example env file and fill in your key:
 
 ```bash
-export RULECOM_API_KEY=<your-key>
+cp .env.example .env
+# edit .env and replace the placeholder with your real key
 ```
 
-Then open Claude Code in this directory. The server loads automatically. Verify with `/mcp` inside the session.
-
-To persist the key across terminal sessions, add the `export` line to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.).
+Open Claude Code in this directory. The server loads automatically. Verify with `/mcp` inside the session. The `.env` file is git-ignored, so your key stays local.
 
 ## Connecting to Claude Code (global)
 
