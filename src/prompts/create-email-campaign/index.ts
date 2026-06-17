@@ -2,15 +2,16 @@ import { McpServer, RegisteredPrompt } from '@modelcontextprotocol/sdk/server/mc
 import { z } from 'zod';
 
 export function registerPrompt(server: McpServer): RegisteredPrompt {
-  return server.registerPrompt('create-email-template', {
-    title: 'Create Email Template',
+  return server.registerPrompt('create-email-campaign', {
+    title: 'Create Email Campaign',
     description:
-      'Full workflow: fetch brand style → derive email theme → generate and validate RCML → ' +
-      'publish template → return template ID. Claude will ask the user for required details ' +
-      '(template name, description, links) before starting.',
+      'Full workflow: gather campaign details → fetch brand style → derive email theme → ' +
+      'generate and validate RCML → create default email campaign (campaign + message + ' +
+      'template + dynamic set in one atomic call) → return summary. Claude will ask the user ' +
+      'for required details (campaign name, subject, sender, description, links) before starting.',
     argsSchema: {
       request: z.string().optional().describe(
-        'Free-form description of what to create. Used as context when gathering required inputs from the user.'
+        'Free-form description of the campaign to create. Used as context when gathering required inputs from the user.'
       ),
       brandStyleId: z.string().optional().describe(
         'Brand style ID (numeric) or name. Omit to use the account default.'
@@ -31,7 +32,11 @@ export function registerPrompt(server: McpServer): RegisteredPrompt {
 
     const gatherInputs =
       `Before doing anything else, ask the user for the following and wait for their answers:\n` +
-      `- **Template name** — what should this template be called in Rule?\n` +
+      `- **Campaign name** — what should this campaign be called in Rule?\n` +
+      `- **Template name** — what should the email template be called? (can be the same as campaign name)\n` +
+      `- **Email subject** — the subject line recipients will see\n` +
+      `- **From name** (optional) — sender display name, e.g. "Jane from Acme"\n` +
+      `- **From email** (optional) — sender email address\n` +
       `- **Description** — what is this email for, and what should it contain?` +
       linksQuestion +
       requestContext;
@@ -51,7 +56,7 @@ export function registerPrompt(server: McpServer): RegisteredPrompt {
         role: 'user',
         content: {
           type: 'text',
-          text: `Create a Rule email template for the user.
+          text: `Create a complete Rule email campaign for the user.
 
 Follow these steps in order:
 
@@ -67,8 +72,13 @@ Follow these steps in order:
     If no URLs were provided, or fetching did not yield usable image URLs, use \`https://app.rule.io/img/editor/image.png\` as the \`src\` for any \`rc-image\` elements — never omit images from the layout just because real URLs are unavailable.
 4. Using the generation guide from step 1, the theme from step 3, and any content fetched in step 3a, generate an \`RcmlDocument\` JSON that matches the description provided by the user. ${linksInstruction}
 5. Call \`generate-email-rcml-doc\` with your RCML and the theme. If it returns validation errors, fix the RCML and call it again — repeat until you receive a valid document.
-6. Call \`create-email-template\` with the validated RCML and the template name the user provided.
-7. Return the template ID to the user.`,
+6. Call \`create-default-email-campaign\` with:
+   - \`brandStyleId\` — the numeric \`id\` field from the brand style object returned in step 2
+   - \`name\` — the campaign name the user provided
+   - \`message\`: \`{ subject, fromName, fromEmail }\` from the user's inputs (omit fields the user skipped)
+   - \`template\`: \`{ name: <template name the user provided>, content: <validated RCML from step 5> }\`
+   This creates the campaign, message, template, and dynamic set atomically. Note the returned campaignId, messageId, templateId, and dynamicSetId.
+7. Return a summary to the user: campaign ID, message ID, template ID, and dynamic set ID.`,
         },
       }],
     };
