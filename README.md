@@ -84,6 +84,7 @@ Restart Claude Desktop to pick up the change.
 | `create-campaign` | Create a new email campaign | `name` (optional), `sendoutType` |
 | `create-email-message` | Create a message (subject + sender) attached to a campaign | `campaignId`, `subject`, sender fields |
 | `create-dynamic-set` | Wire a template to a message to complete campaign setup | `messageId`, `templateId` |
+| `create-default-email-campaign` | Create a complete campaign (campaign + message + template + dynamic set) atomically from a brand style and optional custom RCML | `brandStyleId`, optional `name`, `message`, `template` |
 
 ## Available resources
 
@@ -101,23 +102,21 @@ Prompts are pre-built workflows that orchestrate multiple tools in sequence.
 
 ### `create-email-template`
 
-Builds and publishes an email template, then deploys an HTML preview. Steps:
+Builds and publishes a standalone email template. Steps:
 
 1. Asks the user for template name, description, and optional links
 2. Fetches the brand style and derives an email theme
 3. Fetches content from any provided URLs (images, copy)
 4. Generates and validates an RCML document (iterates until clean)
 5. Publishes the template to Rule
-6. Renders the template and deploys a live preview via [surge](https://surge.sh/)
+6. Returns the template ID
 
 ### `create-email-campaign`
 
 Full end-to-end campaign setup. Does everything `create-email-template` does, then:
 
-7. Creates a campaign in Rule
-8. Creates an email message (subject line, sender details)
-9. Creates a dynamic set to wire the template to the message
-10. Returns a summary with all created IDs and a live preview URL
+7. Calls `create-default-email-campaign` with the validated RCML, creating the campaign, message, template, and dynamic set atomically
+8. Returns a summary with all created IDs (campaign, message, template, dynamic set)
 
 ## Example prompts
 

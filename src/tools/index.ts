@@ -11,6 +11,7 @@ import { registerTool as registerRenderEmailTemplateTool } from './render-email-
 import { registerTool as registerCreateCampaignTool } from './create-campaign/index.js';
 import { registerTool as registerCreateEmailMessageTool } from './create-email-message/index.js';
 import { registerTool as registerCreateDynamicSetTool } from './create-dynamic-set/index.js';
+import { registerTool as registerCreateDefaultEmailCampaignTool } from './create-default-email-campaign/index.js';
 
 
 export function registerTools(server: McpServer, ruleClient: RuleClient): void {
@@ -24,4 +25,5 @@ export function registerTools(server: McpServer, ruleClient: RuleClient): void {
   registerCreateCampaignTool(server, ruleClient);
   registerCreateEmailMessageTool(server, ruleClient);
   registerCreateDynamicSetTool(server, ruleClient);
+  registerCreateDefaultEmailCampaignTool(server, ruleClient);
 }

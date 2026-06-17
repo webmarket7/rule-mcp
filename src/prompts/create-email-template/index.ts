@@ -1,14 +1,12 @@
 import { McpServer, RegisteredPrompt } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-
 export function registerPrompt(server: McpServer): RegisteredPrompt {
   return server.registerPrompt('create-email-template', {
     title: 'Create Email Template',
     description:
       'Full workflow: fetch brand style → derive email theme → generate and validate RCML → ' +
-      'publish template → render and return HTML. Claude will ask the user for required details ' +
+      'publish template → return template ID. Claude will ask the user for required details ' +
       '(template name, description, links) before starting.',
     argsSchema: {
       request: z.string().optional().describe(
@@ -67,12 +65,8 @@ Follow these steps in order:
     If no URLs were provided, or fetching did not yield usable image URLs, use \`https://app.rule.io/img/editor/image.png\` as the \`src\` for any \`rc-image\` elements — never omit images from the layout just because real URLs are unavailable.
 4. Using the generation guide from step 1, the theme from step 3, and any content fetched in step 3a, generate an \`RcmlDocument\` JSON that matches the description provided by the user. ${linksInstruction}
 5. Call \`generate-email-rcml-doc\` with your RCML and the theme. If it returns validation errors, fix the RCML and call it again — repeat until you receive a valid document.
-6. Call \`create-email-template\` with the validated RCML and the template name the user provided. Note the returned template ID.
-7. Call \`render-email-template\` with the template ID from step 6.
-8. Write the rendered HTML to a temporary directory as \`index.html\`, then publish it with surge by running:
-     surge <tmpdir> <slug>.surge.sh
-   where <slug> is the template name (slugified, spaces → hyphens, lowercase) plus a Unix timestamp suffix for uniqueness (e.g. \`${slug(args.request ?? 'template')}-1716070173\`).
-9. Return the live URL (https://<slug>.surge.sh) to the user.`,
+6. Call \`create-email-template\` with the validated RCML and the template name the user provided.
+7. Return the template ID to the user.`,
         },
       }],
     };
